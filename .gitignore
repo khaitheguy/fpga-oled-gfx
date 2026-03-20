@@ -1,0 +1,42 @@
+########################################
+# Vivado generated files (always ignore)
+########################################
+*.cache/
+*.hw/
+*.runs/
+*.sim/
+*.gen/
+*.ip_user_files/
+.Xil/
+
+########################################
+# Logs / temp
+########################################
+*.log
+*.jou
+*.str
+*.backup.*
+*.wdb
+
+########################################
+# OS / editor junk
+########################################
+.DS_Store
+Thumbs.db
+
+########################################
+# Ignore ALL IP-generated contents
+########################################
+FDP.srcs/sources_1/ip/*
+
+# Re-include ONLY the IP definition files
+!FDP.srcs/sources_1/ip/*/
+FDP.srcs/sources_1/ip/**/*.*
+!FDP.srcs/sources_1/ip/**/*.xci
+!FDP.srcs/sources_1/ip/**/*.coe
+!FDP.srcs/sources_1/ip/**/*.mif
+
+########################################
+# Ignore useless Vivado summary files
+########################################
+*archive_project_summary.txt
