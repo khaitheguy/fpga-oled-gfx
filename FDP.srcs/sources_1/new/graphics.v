@@ -29,9 +29,12 @@ module graphics(
     output [7:0] JX
     );
     
-    wire [15:0] pixel_data;
+    reg [15:0] pixel_data;
     wire [12:0] pixel_index;
     wire frame_begin, sending_pixels, sample_pixel;
+    
+    wire [6:0] y;
+    wire [6:0] x;
     
     Oled_Display disp (
         .clk(clk),
@@ -50,7 +53,22 @@ module graphics(
         .pmoden(JX[7])
         );
     
+    assign y = pixel_index / 96;
+    assign x = pixel_index % 96;
+    
+    // Cloud dimensions
+    parameter CLOUD_W = 25;
+    parameter CLOUD_H = 10;
+    parameter CLOUD_X = 40;
+    parameter CLOUD_Y = 5;
+    
     // Draw background
-    assign pixel_data = 16'b00000_000000_11111;
+    always @ (posedge clk) begin
+        // Background layer: sky, grass and clouds
+        if (y >= 50) pixel_data = 16'b00000_111111_00000;
+        else pixel_data = 16'b00000_000000_11111;
+        
+        if (x >= CLOUD_X && x <= CLOUD_X + CLOUD_W && y >= CLOUD_Y && y <= CLOUD_Y + CLOUD_H) pixel_data = 16'b11111_111111_11111;
+    end
     
 endmodule
