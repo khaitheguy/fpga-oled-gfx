@@ -5,8 +5,8 @@ import numpy as np
 INPUT_IMAGE = "input.png"
 OUTPUT_MEM  = "sprite.mem"
 OUTPUT_V    = "sprite.v"
-SPRITE_W    = 32
-SPRITE_H    = 32
+SPRITE_W    = 96
+SPRITE_H    = 64
 GENERATE_VERILOG = True  # Set False if you only want .mem
 
 # ==== LOAD + RESIZE IMAGE ====

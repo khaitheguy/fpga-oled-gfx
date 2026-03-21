@@ -61,31 +61,25 @@ module graphics(
     parameter MAX_X = 95;
     parameter MAX_Y = 63;
     
-    // Cloud dimensions
-    parameter CLOUD_W = 25;
-    parameter CLOUD_H = 10;
-    reg [6:0] CLOUD_X = 0;
-    reg [6:0] CLOUD_Y = 5;
+    parameter BG_W = 96;
+    parameter BG_H = 64;
     
+    reg [15:0] bg [0:BG_W*BG_H-1];
+    
+    initial begin
+        $readmemh("sprite.mem", bg);
+    end
+
     // Timer for cloud movement
     always @(posedge clk) begin
         timer_1 <= (timer_1 == 1_562_500) ? 0 : timer_1 + 1;
         
-        if (timer_1 == 0) CLOUD_X <= (CLOUD_X + 1) % 96;
+//        if (timer_1 == 0) CLOUD_X <= (CLOUD_X + 1) % 96;
     end
     
     // Draw layers
     always @ (posedge clk) begin
-        // Background layer: sky, grass and clouds
-        if (y >= 50) pixel_data = 16'b00000_111111_00000;
-        else pixel_data = 16'b00000_000000_11111;
-        
-        // Cloud
-        if (y >= CLOUD_Y && y <= CLOUD_Y + CLOUD_H) begin
-            // Compute cloud pixel relative position with modulo
-            if (((x + 96 - CLOUD_X) % 96) < CLOUD_W)
-                pixel_data = 16'b11111_111111_11111;
-        end
+        pixel_data <= bg[pixel_index];
     end
     
 endmodule
