@@ -16,7 +16,15 @@ pixels = np.array(img)
 
 # ==== RGB888 -> RGB565 ====
 def rgb888_to_rgb565(r, g, b):
-    return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3)
+    r = int(r)
+    g = int(g)
+    b = int(b)
+
+    r5 = (r * 31) // 255
+    g6 = (g * 63) // 255
+    b5 = (b * 31) // 255
+
+    return (r5 << 11) | (g6 << 5) | b5
 
 bitmap = []
 
