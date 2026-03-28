@@ -67,19 +67,30 @@ module graphics(
     reg [15:0] bg [0:BG_W*BG_H-1];
     
     initial begin
-        $readmemh("sprite.mem", bg);
+        $readmemh("bg.mem", bg);
     end
 
-    // Timer for cloud movement
+    reg [6:0] scroll_x = 0;
+    
     always @(posedge clk) begin
         timer_1 <= (timer_1 == 1_562_500) ? 0 : timer_1 + 1;
-        
-//        if (timer_1 == 0) CLOUD_X <= (CLOUD_X + 1) % 96;
+    
+        if (timer_1 == 0)
+            scroll_x <= (scroll_x + 1) % 96;
     end
     
+    parameter SCROLL_Y0 = 0;
+    parameter SCROLL_Y1 = 38;
+    
+    wire [6:0] sx = (x + scroll_x) % 96;
+    
     // Draw layers
-    always @ (posedge clk) begin
-        pixel_data <= bg[pixel_index];
+    always @(posedge clk) begin
+        if (y >= SCROLL_Y0 && y < SCROLL_Y1) begin
+            pixel_data <= bg[y * 96 + sx];   // SCROLLED
+        end else begin
+            pixel_data <= bg[y * 96 + x];    // STATIC
+        end
     end
     
 endmodule

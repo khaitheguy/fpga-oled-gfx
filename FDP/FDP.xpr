@@ -228,7 +228,7 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/archive_project_summary.txt"/>
-      <File Path="$PPRDIR/../sprites/sprite.mem">
+      <File Path="$PPRDIR/../sprites/bg.mem">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
