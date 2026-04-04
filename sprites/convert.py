@@ -1,37 +1,67 @@
+import sys
+import os
 from PIL import Image
 import numpy as np
 
 # ==== CONFIG ====
-INPUT_IMAGE = "input.png"
-OUTPUT_MEM  = "sprite.mem"
-OUTPUT_V    = "sprite.v"
-SPRITE_W    = 96
-SPRITE_H    = 64
-GENERATE_VERILOG = True  # Set False if you only want .mem
+GENERATE_VERILOG = True
+TRANSPARENT_KEY = 0xF81F  # pink
 
-# ==== LOAD + RESIZE IMAGE ====
-img = Image.open(INPUT_IMAGE).convert("RGB")
-img = img.resize((SPRITE_W, SPRITE_H))
+# ==== ARGUMENT HANDLING ====
+if len(sys.argv) < 2:
+    print("Usage: python convert.py <input_image> [WIDTHxHEIGHT]")
+    sys.exit(1)
+
+INPUT_IMAGE = sys.argv[1]
+
+# Optional size argument
+if len(sys.argv) >= 3:
+    try:
+        w, h = sys.argv[2].lower().split('x')
+        SPRITE_W = int(w)
+        SPRITE_H = int(h)
+        RESIZE = True
+    except:
+        print("Invalid size format. Use WIDTHxHEIGHT (e.g. 96x64)")
+        sys.exit(1)
+else:
+    RESIZE = False
+
+# ==== AUTO OUTPUT NAMES ====
+base_name = os.path.splitext(os.path.basename(INPUT_IMAGE))[0]
+OUTPUT_MEM = base_name + ".mem"
+OUTPUT_V   = base_name + ".v"
+
+# ==== LOAD IMAGE (KEEP ALPHA) ====
+img = Image.open(INPUT_IMAGE).convert("RGBA")
+
+# ==== RESIZE (ONLY IF ARG PROVIDED) ====
+if RESIZE:
+    img = img.resize((SPRITE_W, SPRITE_H))
+else:
+    SPRITE_W, SPRITE_H = img.size  # keep original size
+
 pixels = np.array(img)
 
 # ==== RGB888 -> RGB565 ====
 def rgb888_to_rgb565(r, g, b):
-    r = int(r)
-    g = int(g)
-    b = int(b)
-
-    r5 = (r * 31) // 255
-    g6 = (g * 63) // 255
-    b5 = (b * 31) // 255
-
+    r5 = (int(r) * 31) // 255
+    g6 = (int(g) * 63) // 255
+    b5 = (int(b) * 31) // 255
     return (r5 << 11) | (g6 << 5) | b5
 
 bitmap = []
 
 for y in range(SPRITE_H):
     for x in range(SPRITE_W):
-        r, g, b = pixels[y][x]
-        rgb565 = rgb888_to_rgb565(r, g, b)
+        r, g, b, a = pixels[y][x]
+
+        # ==== TRANSPARENCY HANDLING ====
+        if a < 128:
+            rgb565 = TRANSPARENT_KEY
+        else:
+            rgb565 = rgb888_to_rgb565(r, g, b)
+
         bitmap.append(rgb565)
 
 # ==== WRITE .mem FILE ====

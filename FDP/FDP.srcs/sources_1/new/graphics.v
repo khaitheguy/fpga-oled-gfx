@@ -53,6 +53,8 @@ module graphics(
     parameter MAX_X = 95;
     parameter MAX_Y = 63;
     
+    parameter TRANSPARENT = 16'hF81F;
+
     parameter BG_W = 96;
     parameter BG_H = 64;
     
@@ -62,12 +64,27 @@ module graphics(
     parameter HOME_ICON_W = 9;
     parameter HOME_ICON_H = 9;
     
+    parameter BIRD_W = 15;
+    parameter BIRD_H = 14;
+    
+    parameter PIG_W = 16;
+    parameter PIG_H = 15;
+    
+    parameter CURSOR_W = 9;
+    parameter CURSOR_H = 12;
+    
     reg [15:0] bg [0:BG_W*BG_H-1];
     reg [15:0] home [0:HOME_ICON_W*HOME_ICON_H-1];
-    
+    reg [15:0] bird [0:BIRD_W*BIRD_H-1];
+    reg [15:0] cursor [0:CURSOR_W*CURSOR_H-1];
+    reg [15:0] pig [0:PIG_W*PIG_H-1];
+
     initial begin
         $readmemh("bg.mem", bg);
         $readmemh("home.mem", home);
+        $readmemh("bird_2.mem", bird);
+        $readmemh("cursor.mem", cursor);
+        $readmemh("pig.mem", pig);
     end
 
     reg [6:0] scroll_x = 0;
@@ -94,8 +111,14 @@ module graphics(
 
         
         // bird
+        if (y >= bird_y && y < bird_y + BIRD_H && x >= bird_x && x < bird_x + BIRD_W)
+            if (bird[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
+                pixel_data <=  bird[(y - bird_y) * BIRD_W + (x - bird_x)];
         
         // pigs
+        if (y >= pig_y && y < pig_y + PIG_H && x >= pig_x && x < pig_x + PIG_W)
+            if (pig[(y - pig_y) * PIG_W + (x - pig_x)] != TRANSPARENT)
+                pixel_data <= pig[(y - pig_y) * PIG_W + (x - pig_x)];
         
         // level objects
         
@@ -105,6 +128,9 @@ module graphics(
             pixel_data <= home[(y - HOME_ICON_Y) * HOME_ICON_W + (x - HOME_ICON_X)];
         
         // cursor
+        if (y >= cursor_y && y < cursor_y + CURSOR_H && x >= cursor_x && x < cursor_x + CURSOR_W)
+            if (cursor[(y - cursor_y) * CURSOR_W + (x - cursor_x)] != TRANSPARENT)
+                pixel_data <= cursor[(y - cursor_y) * CURSOR_W + (x - cursor_x)];
     end
     
 endmodule
