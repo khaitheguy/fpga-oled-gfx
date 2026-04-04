@@ -74,6 +74,7 @@ module graphics(
     parameter CURSOR_H = 12;
     
     reg [15:0] bg [0:BG_W*BG_H-1];
+    reg [15:0] bg_title [0:BG_W*BG_H-1];
     reg [15:0] home [0:HOME_ICON_W*HOME_ICON_H-1];
     reg [15:0] bird [0:BIRD_W*BIRD_H-1];
     reg [15:0] cursor [0:CURSOR_W*CURSOR_H-1];
@@ -81,6 +82,7 @@ module graphics(
 
     initial begin
         $readmemh("bg.mem", bg);
+        $readmemh("bg_title.mem", bg_title);
         $readmemh("home.mem", home);
         $readmemh("bird_2.mem", bird);
         $readmemh("cursor.mem", cursor);
@@ -103,29 +105,37 @@ module graphics(
     
     // Draw layers
     always @(posedge clk_6p25m) begin
-        // level background 1
-        if (y >= SCROLL_Y0 && y < SCROLL_Y1)
-            pixel_data <= bg[y * 96 + sx];   // SCROLLED
-        else
-            pixel_data <= bg[y * 96 + x];    // STATIC
+        if (current_fsm_state == 1) begin
+            // menu background
+            pixel_data <= bg_title[y * 96 + x];
 
-        
-        // bird
-        if (y >= bird_y && y < bird_y + BIRD_H && x >= bird_x && x < bird_x + BIRD_W)
-            if (bird[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
-                pixel_data <=  bird[(y - bird_y) * BIRD_W + (x - bird_x)];
-        
-        // pigs
-        if (y >= pig_y && y < pig_y + PIG_H && x >= pig_x && x < pig_x + PIG_W)
-            if (pig[(y - pig_y) * PIG_W + (x - pig_x)] != TRANSPARENT)
-                pixel_data <= pig[(y - pig_y) * PIG_W + (x - pig_x)];
-        
-        // level objects
-        
-        // UI
-        // home icon
-        if (y >= HOME_ICON_Y && y < HOME_ICON_Y + HOME_ICON_H && x >= HOME_ICON_X && x < HOME_ICON_X + HOME_ICON_W) 
-            pixel_data <= home[(y - HOME_ICON_Y) * HOME_ICON_W + (x - HOME_ICON_X)];
+        end else if (current_fsm_state == 2) begin
+            // level background 1
+            if (y >= SCROLL_Y0 && y < SCROLL_Y1)
+                pixel_data <= bg[y * 96 + sx];   // SCROLLED
+            else
+                pixel_data <= bg[y * 96 + x];    // STATIC
+
+            
+            // bird
+            if (y >= bird_y && y < bird_y + BIRD_H && x >= bird_x && x < bird_x + BIRD_W)
+                if (bird[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
+                    pixel_data <=  bird[(y - bird_y) * BIRD_W + (x - bird_x)];
+            
+            // pigs
+            if (y >= pig_y && y < pig_y + PIG_H && x >= pig_x && x < pig_x + PIG_W)
+                if (pig[(y - pig_y) * PIG_W + (x - pig_x)] != TRANSPARENT)
+                    pixel_data <= pig[(y - pig_y) * PIG_W + (x - pig_x)];
+            
+            // level objects
+            
+            // UI
+            // home icon
+            if (y >= HOME_ICON_Y && y < HOME_ICON_Y + HOME_ICON_H && x >= HOME_ICON_X && x < HOME_ICON_X + HOME_ICON_W) 
+                pixel_data <= home[(y - HOME_ICON_Y) * HOME_ICON_W + (x - HOME_ICON_X)];
+        end else if (current_fsm_state == 3) begin
+            // replay screen
+        end
         
         // cursor
         if (y >= cursor_y && y < cursor_y + CURSOR_H && x >= cursor_x && x < cursor_x + CURSOR_W)
