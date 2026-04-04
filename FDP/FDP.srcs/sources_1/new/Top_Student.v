@@ -16,13 +16,36 @@ module Top_Student (input clk, output [7:0] JB);
     wire new_clk;
     
     clk_6_25_mhz slow_clk (clk, new_clk);
+    
+    wire [15:0] pixel_data;
+    wire [12:0] pixel_index;
+    wire frame_begin, sending_pixels, sample_pixel;
+    
+    Oled_Display disp (
+        .clk(new_clk),
+        .reset(0),
+        .pixel_data(pixel_data),
+        .frame_begin(frame_begin),
+        .pixel_index(pixel_index),
+        .sending_pixels(sending_pixels),
+        .sample_pixel(sample_pixel),
+        .cs(JB[0]),
+        .sdin(JB[1]),
+        .sclk(JB[3]),
+        .d_cn(JB[4]),
+        .resn(JB[5]),
+        .vccen(JB[6]),
+        .pmoden(JB[7])
+        );
+            
     graphics gfx (
         .clk(new_clk),
+        .pixel_index(pixel_index),
         .bird_x(0),
         .bird_y(0),
         .cursor_x(0),
         .cursor_y(0),
-        .JX(JB)
+        .pixel_data(pixel_data)
         );
 
 endmodule

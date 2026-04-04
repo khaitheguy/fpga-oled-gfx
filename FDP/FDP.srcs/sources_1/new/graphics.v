@@ -22,38 +22,18 @@
 
 module graphics(
     input clk,
+    input [12:0] pixel_index,
     input bird_x,
     input bird_y,
     input cursor_x,
     input cursor_y,
-    output [7:0] JX
+    output reg [15:0] pixel_data = 0
     );
-    
-    reg [15:0] pixel_data;
-    wire [12:0] pixel_index;
-    wire frame_begin, sending_pixels, sample_pixel;
     
     wire [6:0] y;
     wire [6:0] x;
     
     reg [20:0] timer_1 = 0;
-    
-    Oled_Display disp (
-        .clk(clk),
-        .reset(0),
-        .pixel_data(pixel_data),
-        .frame_begin(frame_begin),
-        .pixel_index(pixel_index),
-        .sending_pixels(sending_pixels),
-        .sample_pixel(sample_pixel),
-        .cs(JX[0]),
-        .sdin(JX[1]),
-        .sclk(JX[3]),
-        .d_cn(JX[4]),
-        .resn(JX[5]),
-        .vccen(JX[6]),
-        .pmoden(JX[7])
-        );
     
     assign y = pixel_index / 96;
     assign x = pixel_index % 96;
