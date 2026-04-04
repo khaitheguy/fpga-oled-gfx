@@ -39,7 +39,7 @@ module Top_Student (input clk, output [7:0] JB);
         );
             
     graphics gfx (
-        .clk(new_clk),
+        .clk_6p25m(new_clk),
         .pixel_index(pixel_index),
         .bird_x(0),
         .bird_y(0),
