@@ -24,6 +24,7 @@ module graphics(
     input clk_6p25m,
     input [12:0] pixel_index,
     
+    input [2:0] bird_type,
     input [2:0] current_fsm_state,  // 1=menu, 2=play, 3=replay
     
     // mouse coordinates
@@ -76,7 +77,9 @@ module graphics(
     reg [15:0] bg [0:BG_W*BG_H-1];
     reg [15:0] bg_title [0:BG_W*BG_H-1];
     reg [15:0] home [0:HOME_ICON_W*HOME_ICON_H-1];
-    reg [15:0] bird [0:BIRD_W*BIRD_H-1];
+    reg [15:0] bird_1 [0:BIRD_W*BIRD_H-1];
+    reg [15:0] bird_2 [0:BIRD_W*BIRD_H-1];
+    reg [15:0] bird_3 [0:BIRD_W*BIRD_H-1];
     reg [15:0] cursor [0:CURSOR_W*CURSOR_H-1];
     reg [15:0] pig [0:PIG_W*PIG_H-1];
 
@@ -84,7 +87,9 @@ module graphics(
         $readmemh("bg.mem", bg);
         $readmemh("bg_title.mem", bg_title);
         $readmemh("home.mem", home);
-        $readmemh("bird_2.mem", bird);
+        $readmemh("bird_1.mem", bird_1);
+        $readmemh("bird_2.mem", bird_2);
+        $readmemh("bird_3.mem", bird_3);
         $readmemh("cursor.mem", cursor);
         $readmemh("pig.mem", pig);
     end
@@ -118,9 +123,19 @@ module graphics(
 
             
             // bird
-            if (y >= bird_y && y < bird_y + BIRD_H && x >= bird_x && x < bird_x + BIRD_W)
-                if (bird[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
-                    pixel_data <=  bird[(y - bird_y) * BIRD_W + (x - bird_x)];
+            if (y >= bird_y && y < bird_y + BIRD_H && x >= bird_x && x < bird_x + BIRD_W) begin
+                case (bird_type)
+                    3'b000:
+                        if (bird_1[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
+                            pixel_data <= bird_1[(y - bird_y) * BIRD_W + (x - bird_x)];
+                    3'b001:
+                        if (bird_2[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
+                            pixel_data <= bird_2[(y - bird_y) * BIRD_W + (x - bird_x)];
+                    3'b010:
+                        if (bird_3[(y - bird_y) * BIRD_W + (x - bird_x)] != TRANSPARENT)
+                            pixel_data <= bird_3[(y - bird_y) * BIRD_W + (x - bird_x)];
+                endcase
+            end
             
             // pigs
             if (y >= pig_y && y < pig_y + PIG_H && x >= pig_x && x < pig_x + PIG_W)
