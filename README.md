@@ -4,13 +4,13 @@
 
 ### gfx and audio only
 - These components were done by the other group members:
--   FSM
--   Physics (trajectory and collision)
--   Score system
--   Grid-based level design
--   Level editor
--   Replay system
--   Level selection
+  -  FSM
+  -  Physics (trajectory and collision)
+  -  Score system
+  -  Grid-based level design
+  -  Level editor
+  -  Replay system
+  -  Level selection
 
 ### Graphics
 - Code is in `./FDP/FDP.srcs/sources_1/new/graphics.v`
